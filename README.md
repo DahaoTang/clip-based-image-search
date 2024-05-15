@@ -6,7 +6,8 @@
 
 This personal project develops a straightforward image search application using CLIP, which matches images in a database to user-provided descriptions. The application is deployed through a simple Next.js-based website interface.
 
-[demo](https://github.com/DahaoTang/clip-based-image-search/blob/main/demo.mp4)
+https://github.com/DahaoTang/clip-based-image-search/assets/87845979/9e861772-b175-49fe-9118-1d89740094de
+
 
 ## Setup Instructions
 
