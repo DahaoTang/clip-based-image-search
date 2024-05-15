@@ -14,7 +14,8 @@ def clip():
 
     image_list, caption_list = get_image_and_caption_list()
 
-    count = 12 * 5
+    count = 12 * 5 # In the database, each image contains 5 different descriptions and hence appears 5 times in captions.txt
+
     image_index = get_image_from_caption(
         user_caption=caption,
         count=count,
@@ -22,7 +23,7 @@ def clip():
         plot_or_not=False
     )
 
-    return jsonify(image_index)
+    return jsonify(list(set(image_index))) # Remove duplicated images
 
 
 if __name__ == '__main__':

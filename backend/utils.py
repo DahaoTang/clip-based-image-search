@@ -4,6 +4,17 @@ import clip
 
 
 def get_image_and_caption_list(caption_txt_file_path="data/captions.txt"):
+    """
+        The function will read the captions.txt file and 
+        retrieve the information provided by the database and return them as two lists.
+
+        Param:
+            caption_txt_file_path: the path to captions.txt 
+
+        Return:
+            Two lists, one for the paths of all the images, 
+            the other one for the description for each of the image.
+    """
 
     image_list = []
     caption_list = []
@@ -22,28 +33,42 @@ def get_image_and_caption_list(caption_txt_file_path="data/captions.txt"):
 
 
 def get_image_from_caption(user_caption, count, image_list, plot_or_not=False):
-    device = "cpu"
+    """
+        Uses the CLIP model to find images most similar to a given caption. It returns a specified number of images
+        that best match the user's description.
+
+        Param:
+            user_caption: the description for the image wanted, provided by the user
+            count: the number of images wanted
+            image_list: the list containing the paths of all the images
+        
+        Return:
+            List of images produced by CLIP.
+
+    """
+    device = 'cpu'
     model, preprocess = clip.load("RN50", device=device, jit=False)
 
-    # Load and preprocess image data
-    image_data = torch.stack([torch.load(
-        'index/image/'+i.rstrip('.jpg').strip('data/Images')+'.pt', map_location=device) for i in image_list])
-    image_data /= image_data.norm(dim=-1, keepdim=True)
+    # Load and preprocess images
+    image_features = []
+    for image_path in image_list:
+        image_name = image_path.rstrip(".jpg").strip("data/Images")
+        image_pt = torch.load("index/image/" + image_name + ".pt", map_location=device)
+        image_features.append(image_pt)
+    image_tensors = torch.stack(image_features).float()
+    image_tensors /= image_tensors.norm(dim=-1, keepdim=True)
 
-    # Tokenize and encode the text caption
-    text_features = torch.cat([clip.tokenize(f"{user_caption}")]).to(device)
-    text_features = model.encode_text(text_features)
-    text_features = text_features.to(device)
+    # Tokenize uer caption to retrieve feature
+    text_tokens = clip.tokenize([user_caption]).to(device)
+    text_features = model.encode_text(text_tokens).float()
 
-    # Reshape and convert image data
-    image_data = image_data.reshape(image_data.shape[0], image_data.shape[-1])
-    image_data = image_data.float()
-    text_features = text_features.float()
+    # Calculate similarity
+    similarity = (100.0 * image_tensors @ text_features.T).softmax(dim=0)
 
-    # Calculate similarity and get top images
-    similarity = (100.0 * image_data @ text_features.T)
-    similarity = similarity.reshape(-1).softmax(dim=-1)
-    values, indices = similarity.topk(count)
-    result_image = [image_list[i] for i in indices.numpy().tolist()]
+    # Selected top ones
+    top_values, top_indices = similarity.squeeze().topk(count)
 
-    return result_image
+    # Get paths of images to return
+    result_images = [image_list[idx] for idx in top_indices.tolist()]
+
+    return result_images

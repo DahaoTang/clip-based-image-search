@@ -6,10 +6,12 @@ name = "pypi"
 [packages]
 flask = "*"
 flask_cors = "*"
+ftfy = "*"
+regex = "*"
+setuptools = "*"
 torch = "*"
 torchvision = "*"
 tqdm = "*"
-
 
 [dev-packages]
 ipykernel = "*"

@@ -6,25 +6,29 @@ import { useState } from "react";
 export default function Home() {
 	const [caption, setCaption] = useState("");
 	const [imageIndex, setImageIndex] = useState<string[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
 
-	// Function to handle form submission
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
-		console.log("Caption entered: ", caption);
+		setIsLoading(true);
+		// console.log("Caption entered: ", caption);
 
-		// Fetch the images based on the entered caption
-		const response = await fetch("http://localhost:5001/api/search", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ caption }),
-		});
-
-		// Get the images' index data
-		const data = await response.json();
-		console.log("Index of images found: ", data);
-		setImageIndex(data);
+		try {
+			const response = await fetch("http://localhost:5001/api/search", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ caption }),
+			});
+			const data = await response.json();
+			// console.log("Index of images found: ", data);
+			setImageIndex(data);
+		} catch (error) {
+			console.error("Error fetching images:", error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -55,28 +59,32 @@ export default function Home() {
 					</div>
 				</div>
 				<div className="w-[70%] p-5">
-					<div className="w-full h-full bg-neutral-50">
-						{imageIndex.length > 0 && (
-							<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
-								{imageIndex.map(
-									(item, index) =>
-										index % 5 === 0 && (
-											<div
-												key={index}
-												className="relative group overflow-hidden rounded-lg shadow-lg"
-												style={{ height: "200px" }} // Ensure a fixed height for each image's parent div
-											>
-												<Image
-													src={`/${item}`}
-													alt={`Image ${index}`}
-													fill
-													sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Adaptive sizes for responsive images
-													className="object-cover transform transition-transform duration-300 group-hover:scale-105"
-												/>
-											</div>
-										)
-								)}
+					<div className="w-full h-full bg-neutral-50 flex justify-center items-center">
+						{isLoading ? (
+							<div>Loading...</div>
+						) : imageIndex.length > 0 ? (
+							<div className="grid grid-cols-4 gap-4">
+								{imageIndex.map((item, index) => (
+									<div
+										key={index}
+										className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer"
+										style={{ width: "100%", height: "220px" }}
+										onClick={() => window.open(`/${item}`, "_blank")} // Open image in a new tab on click
+									>
+										<Image
+											src={`/${item}`}
+											alt={`Image ${index}`}
+											layout="responsive"
+											width={1} // Placeholder
+											height={1} // Placeholder
+											sizes="33vw"
+											className="object-cover transform transition-transform duration-300 group-hover:scale-105"
+										/>
+									</div>
+								))}
 							</div>
+						) : (
+							<div>No images found based on the caption</div>
 						)}
 					</div>
 				</div>
