@@ -6,6 +6,8 @@
 
 This personal project develops a straightforward image search application using CLIP, which matches images in a database to user-provided descriptions. The application is deployed through a simple Next.js-based website interface.
 
+[demo](demo.mp4)
+
 ## Setup Instructions
 
 ### Preparation
