@@ -7,6 +7,7 @@ name = "pypi"
 flask = "*"
 flask_cors = "*"
 torch = "*"
+torchvision = "*"
 tqdm = "*"
 
 
