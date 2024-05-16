@@ -24,7 +24,7 @@ https://github.com/DahaoTang/clip-based-image-search/assets/87845979/9e861772-b1
 2. **Install Dependencies:** Execute `pipenv install` to install all necessary Python dependencies.
 3. **Data Conversion:** Run the `setup.py` Python script to convert the dataset into `.pt` files. Note that this process might take over 30 minutes.
 
-### Execution
+## Execution
 
 - **Frontend:** Proceed to `./frontend` and execute `npm run dev` to start the frontend.
 - **Backend:** In `./backend`, run `python3 main.py` to launch the backend.
